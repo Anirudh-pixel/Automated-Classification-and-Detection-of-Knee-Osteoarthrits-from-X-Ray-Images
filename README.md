@@ -10,7 +10,7 @@ A two-stage deep-learning system that reads a knee X-ray and estimates osteoarth
 - **WhatsApp:** https://wa.me/15556762167 *(test recipients only, for now)*
 
 <!-- TODO: fill these in -->
-*Author:* `____________`  ·  *Guide:* `____________`  ·  *Repo:* `https://github.com/<your-username>/<repo-name>`
+*Author:* `Anirudh Vempati`  ·  ·  *Repo:* `https://github.com/Anirudh-pixel/Automated-Classification-and-Detection-of-Knee-Osteoarthrits-from-X-Ray-Images`
 
 ---
 
