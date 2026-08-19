@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>KOA Screen — Knee Osteoarthritis X-ray Screening</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F4F7F9;
+    --panel:#FFFFFF;
+    --ink:#15242E;
+    --muted:#5B6B76;
+    --line:#E1E8ED;
+    --blue:#1763C7;
+    --blue-soft:#E8F0FB;
+    --viewer:#0E1A23;          /* the dark "light box" */
+    --healthy:#1C9E78;
+    --moderate:#E0A008;
+    --severe:#D8443A;
+    --shadow:0 1px 2px rgba(20,40,55,.05), 0 12px 30px -18px rgba(20,40,55,.25);
+    --r:14px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;background:var(--paper);color:var(--ink);
+    font-family:'Inter',system-ui,sans-serif;line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--blue);font-weight:500;
+  }
+  a{color:inherit}
+
+  /* header */
+  header{padding:22px 0;border-bottom:1px solid var(--line)}
+  .bar{display:flex;align-items:center;justify-content:space-between;gap:16px}
+  .brand{display:flex;align-items:center;gap:11px;font-family:'Space Grotesk';font-weight:700;font-size:18px}
+  .brand .mark{
+    width:30px;height:30px;border-radius:8px;background:var(--viewer);
+    display:grid;place-items:center;color:#cfe0ef;flex:none;
+  }
+  .brand .mark svg{width:17px;height:17px}
+  .tag{font-family:'IBM Plex Mono';font-size:12px;color:var(--muted)}
+
+  /* hero */
+  .hero{padding:54px 0 30px;display:grid;grid-template-columns:1.05fr 1fr;gap:48px;align-items:start}
+  h1{font-family:'Space Grotesk';font-weight:700;font-size:clamp(34px,5vw,52px);line-height:1.04;letter-spacing:-.02em;margin:16px 0 18px}
+  .lead{font-size:17px;color:var(--muted);max-width:46ch}
+  .scale{margin:30px 0 0}
+  .scale-label{display:flex;justify-content:space-between;font-family:'IBM Plex Mono';font-size:11px;color:var(--muted);letter-spacing:.04em;margin-bottom:7px}
+  .ruler{height:10px;border-radius:6px;overflow:hidden;display:flex;border:1px solid var(--line)}
+  .ruler span{flex:1}
+  .ruler .s0,.ruler .s1{background:var(--healthy)}
+  .ruler .s2{background:var(--moderate)}
+  .ruler .s3,.ruler .s4{background:var(--severe)}
+  .ticks{display:flex;justify-content:space-between;font-family:'IBM Plex Mono';font-size:11px;color:var(--muted);margin-top:6px}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;margin-top:18px;font-size:13px}
+  .legend i{width:10px;height:10px;border-radius:3px;display:inline-block;margin-right:7px;vertical-align:middle}
+  .micro{margin-top:26px;font-size:12.5px;color:var(--muted);border-left:2px solid var(--line);padding-left:12px}
+
+  /* grader card */
+  .grader{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden}
+  .grader-head{padding:16px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}
+  .grader-head h2{font-family:'Space Grotesk';font-size:15px;margin:0;font-weight:600}
+  .grader-head .dot{font-family:'IBM Plex Mono';font-size:11px;color:var(--muted)}
+  .viewer{
+    margin:20px;background:var(--viewer);border-radius:10px;aspect-ratio:4/3;
+    display:grid;place-items:center;position:relative;overflow:hidden;cursor:pointer;
+    transition:outline-color .2s;outline:2px solid transparent;outline-offset:2px;
+  }
+  .viewer:hover,.viewer:focus-visible{outline-color:var(--blue)}
+  .viewer img{width:100%;height:100%;object-fit:contain;display:none}
+  .viewer.has-img img{display:block}
+  .viewer .ph{text-align:center;color:#7d93a4;padding:24px}
+  .viewer.has-img .ph{display:none}
+  .viewer .ph svg{width:34px;height:34px;opacity:.6;margin-bottom:10px}
+  .viewer .ph b{display:block;color:#aebfcc;font-weight:600;font-size:14px;font-family:'Space Grotesk'}
+  .viewer .ph small{font-size:12px}
+  .controls{padding:0 20px 20px;display:flex;gap:10px}
+  .btn{
+    font-family:'Space Grotesk';font-weight:600;font-size:15px;border:none;border-radius:10px;
+    padding:13px 18px;cursor:pointer;transition:transform .08s,background .2s;flex:1;
+  }
+  .btn-primary{background:var(--blue);color:#fff}
+  .btn-primary:hover{background:#114f9e}
+  .btn-primary:active{transform:translateY(1px)}
+  .btn-primary:disabled{background:#aab9c6;cursor:not-allowed}
+  .btn-ghost{background:var(--blue-soft);color:var(--blue);flex:none;padding:13px 16px}
+
+  /* result */
+  .result{border-top:1px solid var(--line);padding:20px;display:none}
+  .result.show{display:block}
+  .verdict{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+  .verdict .v{font-family:'Space Grotesk';font-size:26px;font-weight:700}
+  .verdict .c{font-family:'IBM Plex Mono';font-size:13px;color:var(--muted)}
+  .readout{display:flex;gap:6px;margin:16px 0}
+  .readout .seg{flex:1;height:36px;border-radius:7px;background:#EEF2F5;display:grid;place-items:center;
+    font-family:'IBM Plex Mono';font-size:11px;color:#9aa9b4;letter-spacing:.06em;transition:all .35s}
+  .readout .seg.on-h{background:var(--healthy);color:#fff}
+  .readout .seg.on-m{background:var(--moderate);color:#fff}
+  .readout .seg.on-s{background:var(--severe);color:#fff}
+  .stats{font-family:'IBM Plex Mono';font-size:12.5px;color:var(--muted);line-height:1.9;margin-top:4px}
+  .stats b{color:var(--ink);font-weight:500}
+  .gradekey{font-size:12.5px;color:var(--muted);margin-top:14px;padding-top:14px;border-top:1px dashed var(--line)}
+  .reject{font-family:'Space Grotesk';font-weight:600;color:var(--severe);font-size:17px}
+  .reject + p{font-size:13.5px;color:var(--muted);margin:8px 0 0}
+  .status{font-family:'IBM Plex Mono';font-size:12px;color:var(--muted);padding:0 20px 18px;display:none}
+  .status.show{display:block}
+  .spin{display:inline-block;width:11px;height:11px;border:2px solid var(--line);border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite;vertical-align:-1px;margin-right:7px}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  /* channels */
+  .section{padding:56px 0;border-top:1px solid var(--line)}
+  .section h3{font-family:'Space Grotesk';font-size:24px;margin:10px 0 6px;font-weight:700;letter-spacing:-.01em}
+  .section .sub{color:var(--muted);font-size:15px;max-width:52ch;margin:0 0 28px}
+  .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  .card{
+    background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:20px;
+    text-decoration:none;display:flex;flex-direction:column;gap:12px;transition:transform .12s,box-shadow .2s,border-color .2s;
+  }
+  .card:hover{transform:translateY(-3px);box-shadow:var(--shadow);border-color:#cdd9e1}
+  .card .ico{width:40px;height:40px;border-radius:10px;display:grid;place-items:center;background:var(--blue-soft);color:var(--blue)}
+  .card .ico svg{width:21px;height:21px}
+  .card .nm{font-family:'Space Grotesk';font-weight:600;font-size:16px}
+  .card .ds{font-size:12.5px;color:var(--muted);line-height:1.5;flex:1}
+  .card .go{font-family:'IBM Plex Mono';font-size:11px;color:var(--blue);letter-spacing:.05em}
+  .card.live .ico{background:var(--viewer);color:#cfe0ef}
+
+  footer{border-top:1px solid var(--line);padding:34px 0 48px}
+  .disc{font-size:13px;color:var(--muted);background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+  .disc b{color:var(--ink)}
+  .foot{margin-top:18px;font-family:'IBM Plex Mono';font-size:11.5px;color:var(--muted);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+
+  @media (max-width:860px){
+    .hero{grid-template-columns:1fr;gap:34px;padding-top:38px}
+    .cards{grid-template-columns:repeat(2,1fr)}
+  }
+  @media (max-width:480px){ .cards{grid-template-columns:1fr} }
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap bar">
+    <div class="brand">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 3v6a5 5 0 0 0 10 0V3M9 21v-4a3 3 0 0 1 6 0v4"/></svg></span>
+      KOA&nbsp;Screen
+    </div>
+    <div class="tag">ResNet50V2 · two-stage cascade</div>
+  </div>
+</header>
+
+<section class="wrap hero">
+  <div>
+    <div class="eyebrow">AI radiograph screening</div>
+    <h1>Read a knee X-ray for osteoarthritis severity in seconds.</h1>
+    <p class="lead">Upload a knee radiograph and a two-stage model screens it — first healthy vs diseased, then moderate vs severe — returning a graded result on the Kellgren–Lawrence scale.</p>
+
+    <div class="scale">
+      <div class="scale-label"><span>Kellgren–Lawrence grade</span><span>severity →</span></div>
+      <div class="ruler"><span class="s0"></span><span class="s1"></span><span class="s2"></span><span class="s3"></span><span class="s4"></span></div>
+      <div class="ticks"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span></div>
+      <div class="legend">
+        <span><i style="background:var(--healthy)"></i>Healthy · KL 0–1</span>
+        <span><i style="background:var(--moderate)"></i>Moderate · KL 2</span>
+        <span><i style="background:var(--severe)"></i>Severe · KL 3–4</span>
+      </div>
+    </div>
+
+    <p class="micro"><b>Educational screening demo — not a medical diagnosis.</b> A student/research demonstration that may be wrong. It cannot replace a radiologist or clinician.</p>
+  </div>
+
+  <!-- <div class="grader" id="grader">
+    <div class="grader-head"><h2>Try it</h2><span class="dot" id="conn">model: idle</span></div>
+    <div class="viewer" id="viewer" tabindex="0" role="button" aria-label="Upload a knee X-ray">
+      <img id="preview" alt="X-ray preview" />
+      <div class="ph">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 16V4m0 0L8 8m4-4 4 4"/><path d="M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
+        <b>Drop a knee X-ray, or click to upload</b>
+        <small>Grayscale radiograph · PNG or JPG</small>
+      </div>
+    </div>
+    <input type="file" id="file" accept="image/*" hidden />
+    <div class="controls">
+      <button class="btn btn-primary" id="analyze" disabled>Analyze</button>
+      <button class="btn btn-ghost" id="clear" title="Clear">Clear</button>
+    </div>
+    <div class="status" id="status"></div>
+    <div class="result" id="result"></div>
+  </div> -->
+  <div class="grader" id="grader">
+    <div class="grader-head"><h2>Try it</h2><span class="dot">live · Hugging Face</span></div>
+    <iframe
+      src="https://anirudh2474-knee-oa-xray-demo.hf.space"
+      style="width:100%;height:600px;border:0;display:block"
+      title="KOA X-ray grader"
+      loading="lazy"></iframe>
+  </div>
+</section>
+
+<section class="wrap section">
+  <div class="eyebrow">Same model, four places</div>
+  <h3>Use it where you already are</h3>
+  <p class="sub">The screening logic is identical across every surface — the web demo, two chat bots, and WhatsApp all call the same model.</p>
+  <div class="cards" id="cards">
+    <a class="card live" id="lnk-space" href="https://huggingface.co/spaces/Anirudh2474/knee-oa-xray-demo" target="_blank" rel="noopener">
+      <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg></span>
+      <span class="nm">Live web demo</span>
+      <span class="ds">The full Gradio interface on Hugging Face Spaces. Always on.</span>
+      <span class="go">Open Space →</span>
+    </a>
+    <a class="card" id="lnk-tg" href="https://t.me/koa_xray_demo_bot" target="_blank" rel="noopener">
+      <span class="ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.9 4.3 18.7 19.4c-.2 1-.9 1.3-1.7.8l-4.7-3.5-2.3 2.2c-.3.3-.5.5-.9.5l.3-4.6 8.5-7.7c.4-.3-.1-.5-.6-.2L6.9 13.4l-4.5-1.4c-1-.3-1-1 .2-1.5L20.6 3c.8-.3 1.5.2 1.3 1.3Z"/></svg></span>
+      <span class="nm">Telegram bot</span>
+      <span class="ds">Send the bot an X-ray photo, get a verdict in chat.</span>
+      <span class="go">Open in Telegram →</span>
+    </a>
+    <a class="card" id="lnk-dc" href="https://discord.com/oauth2/authorize?client_id=1514886352502526114&permissions=101376&integration_type=0&scope=bot" target="_blank" rel="noopener">
+      <span class="ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.3 5.3A16 16 0 0 0 15.4 4l-.2.4a12 12 0 0 1 3.4 1.7 11 11 0 0 0-9.3 0A12 12 0 0 1 12.8 4.4L12.6 4a16 16 0 0 0-3.9 1.3C5.5 9.3 4.7 13.2 5 17a16 16 0 0 0 4.8 2.4l.5-.8c-.8-.3-1.5-.7-2.2-1.1l.5-.4a11 11 0 0 0 9.4 0l.5.4c-.7.4-1.4.8-2.2 1.1l.5.8A16 16 0 0 0 21 17c.4-4.4-.7-8.3-1.7-11.7ZM9.7 14.7c-.8 0-1.4-.7-1.4-1.6s.6-1.6 1.4-1.6 1.5.7 1.4 1.6c0 .9-.6 1.6-1.4 1.6Zm4.6 0c-.8 0-1.4-.7-1.4-1.6s.6-1.6 1.4-1.6 1.5.7 1.4 1.6c0 .9-.6 1.6-1.4 1.6Z"/></svg></span>
+      <span class="nm">Discord bot</span>
+      <span class="ds">Mention the bot with an X-ray attached, or DM it directly.</span>
+      <span class="go">Add to Discord →</span>
+    </a>
+    <a class="card" id="lnk-wa" href="https://wa.me/15556762167" target="_blank" rel="noopener">
+      <span class="ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15l-1.3 4.7 4.8-1.3A10 10 0 1 0 12 2Zm5.1 14c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .1-1.7-.1-.4-.1-.9-.3-1.6-.6a9 9 0 0 1-3.6-3.2c-.3-.4-.8-1.2-.8-2.2s.5-1.6.7-1.8a.8.8 0 0 1 .6-.3h.4c.2 0 .4 0 .6.5l.7 1.6c.1.2.1.3 0 .5l-.3.4-.3.3c-.1.1-.3.3-.1.5a7 7 0 0 0 1.2 1.5c.6.5 1.1.7 1.4.8.2.1.4.1.5-.1l.6-.7c.2-.2.3-.2.5-.1l1.5.7c.3.1.4.2.5.3 0 .1 0 .6-.2 1.1Z"/></svg></span>
+      <span class="nm">WhatsApp</span>
+      <span class="ds">Message the number an X-ray (test recipients only, for now).</span>
+      <span class="go">Open in WhatsApp →</span>
+    </a>
+  </div>
+</section>
+
+<footer class="wrap">
+  <div class="disc"><b>Educational screening demo — not a medical diagnosis.</b> This is a student/research demonstration and may be wrong. It cannot replace a radiologist or clinician. If you have knee pain or any health concern, please consult a qualified medical professional. The live demo serves a single ResNet50V2 per stage for speed; results are not clinically validated.</div>
+  <div class="foot"><span>KOA Screen — knee osteoarthritis X-ray screening</span><span>Kellgren–Lawrence 0–4 · cascade · ResNet50V2</span></div>
+</footer>
+
+<script type="module">
+  import { Client } from "https://esm.sh/@gradio/client@1.7.1";
+
+  // ====== EDIT THESE FOUR LINKS ======
+  const LINKS = {
+    space:    "https://huggingface.co/spaces/Anirudh2474/knee-oa-xray-demo",
+    telegram: "https://t.me/koa_xray_demo_bot",          // your Telegram bot's t.me link
+    discord:  "https://discord.com/oauth2/authorize?client_id=1514886352502526114&permissions=101376&integration_type=0&scope=bot",
+    whatsapp: "https://wa.me/15556762167",               // wa.me/<number, digits only, no +>
+  };
+  const SPACE_ID = "Anirudh2474/knee-oa-xray-demo";
+  const ENDPOINT = "/predict";   // if you didn't add api_name="predict" in app.py, change to 0
+  // ===================================
+
+  document.getElementById("lnk-space").href = LINKS.space;
+  document.getElementById("lnk-tg").href    = LINKS.telegram;
+  document.getElementById("lnk-dc").href    = LINKS.discord;
+  document.getElementById("lnk-wa").href    = LINKS.whatsapp;
+
+  const viewer = document.getElementById("viewer");
+  const fileInput = document.getElementById("file");
+  const preview = document.getElementById("preview");
+  const analyzeBtn = document.getElementById("analyze");
+  const clearBtn = document.getElementById("clear");
+  const statusEl = document.getElementById("status");
+  const resultEl = document.getElementById("result");
+  const connEl = document.getElementById("conn");
+
+  let currentFile = null;
+  let client = null;
+
+  function setStatus(html){ statusEl.innerHTML = html; statusEl.classList.toggle("show", !!html); }
+  function pct(x){ return (x*100).toFixed(0) + "%"; }
+
+  function loadFile(file){
+    if(!file || !file.type.startsWith("image/")) return;
+    currentFile = file;
+    preview.src = URL.createObjectURL(file);
+    viewer.classList.add("has-img");
+    analyzeBtn.disabled = false;
+    resultEl.classList.remove("show");
+    setStatus("");
+  }
+
+  viewer.addEventListener("click", () => fileInput.click());
+  viewer.addEventListener("keydown", e => { if(e.key==="Enter"||e.key===" ") fileInput.click(); });
+  fileInput.addEventListener("change", e => loadFile(e.target.files[0]));
+  ["dragover","dragenter"].forEach(ev => viewer.addEventListener(ev, e => { e.preventDefault(); }));
+  viewer.addEventListener("drop", e => { e.preventDefault(); loadFile(e.dataTransfer.files[0]); });
+
+  clearBtn.addEventListener("click", () => {
+    currentFile = null; preview.src = ""; viewer.classList.remove("has-img");
+    analyzeBtn.disabled = true; resultEl.classList.remove("show"); setStatus("");
+  });
+
+  function render(data){
+    // data = [summary_string, json_object]
+    const r = Array.isArray(data) ? data[1] : data;
+    if(!r){ setStatus("No result returned."); return; }
+
+    if(r.rejected){
+      resultEl.innerHTML =
+        `<div class="reject">Not an X-ray</div><p>${r.reason || "Please upload a grayscale knee radiograph."}</p>`;
+      resultEl.classList.add("show"); setStatus(""); return;
+    }
+
+    const v = r.result;                       // Healthy | Moderate | Severe
+    const conf = r.confidence != null ? pct(r.confidence) : "";
+    const cls = v==="Healthy" ? "on-h" : v==="Moderate" ? "on-m" : "on-s";
+
+    let stats = `<div class="stats"><b>Diseased probability:</b> ${r.p_diseased!=null?pct(r.p_diseased):"–"}`;
+    if(r.p_severe != null) stats += `<br><b>Severe probability:</b> ${pct(r.p_severe)}`;
+    stats += `</div>`;
+
+    resultEl.innerHTML =
+      `<div class="verdict"><span class="v" style="color:var(--${v==='Healthy'?'healthy':v==='Moderate'?'moderate':'severe'})">${v}</span>
+        <span class="c">confidence ${conf}</span></div>
+       <div class="readout">
+         <div class="seg ${v==='Healthy'?cls:''}">HEALTHY</div>
+         <div class="seg ${v==='Moderate'?cls:''}">MODERATE</div>
+         <div class="seg ${v==='Severe'?cls:''}">SEVERE</div>
+       </div>
+       ${stats}
+       <div class="gradekey">${r.grade_key || "Healthy = KL 0–1 · Moderate = KL 2 · Severe = KL 3–4"}</div>`;
+    resultEl.classList.add("show");
+    setStatus("");
+  }
+
+  analyzeBtn.addEventListener("click", async () => {
+    if(!currentFile) return;
+    resultEl.classList.remove("show");
+    analyzeBtn.disabled = true;
+    try{
+      if(!client){
+        setStatus(`<span class="spin"></span>Waking the model — first run can take 30–60s…`);
+        connEl.textContent = "model: connecting";
+        client = await Client.connect(SPACE_ID);
+        connEl.textContent = "model: ready";
+      }
+      setStatus(`<span class="spin"></span>Analyzing radiograph…`);
+      const out = await client.predict(ENDPOINT, [currentFile]);
+      render(out.data);
+    }catch(err){
+      console.error(err);
+      setStatus("Couldn't reach the model. The Space may be starting up — wait a moment and try again.");
+    }finally{
+      analyzeBtn.disabled = false;
+    }
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+{
+  "task": "5-grade KL training, merged to 3-class and binary at inference",
+  "img_size": 320,
+  "num_classes": 5,
+  "grade_names": [
+    "0",
+    "1",
+    "2",
+    "3",
+    "4"
+  ],
+  "ternary_names": [
+    "Healthy",
+    "Moderate",
+    "Severe"
+  ],
+  "binary_names": [
+    "Healthy",
+    "Diseased"
+  ],
+  "grade_to_ternary": {
+    "0": 0,
+    "1": 0,
+    "2": 1,
+    "3": 2,
+    "4": 2
+  },
+  "grade_to_binary": {
+    "0": 0,
+    "1": 0,
+    "2": 1,
+    "3": 1,
+    "4": 1
+  },
+  "class_weights_5grade": [
+    0.532664037289351,
+    0.9684485006518905,
+    0.8498855835240274,
+    1.5190184049079754,
+    3.9197889182058048
+  ],
+  "ensemble_weights": [
+    0.0,
+    0.0,
+    1.0
+  ],
+  "weights_files": [
+    "final_g5_efficientnet.h5",
+    "final_g5_densenet.h5",
+    "final_g5_resnet.h5"
+  ]
+}

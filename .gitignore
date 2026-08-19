@@ -1,0 +1,45 @@
+# ═══════════════════════════════════════════════════════════
+#  KOA project .gitignore  — keeps datasets, weights & secrets
+#  out of GitHub. Only code + notebooks get pushed.
+# ═══════════════════════════════════════════════════════════
+
+# ── Dataset folders (thousands of images — never commit) ───
+kaggle_dataset_2018/
+kaggle_dataset2_2020/
+graded_dataset_5/
+graded_extra_test_2020_E1/
+stage1_binary/
+stage2_mod_vs_sev/
+# catch-all for any other data/image folders
+graded_*/
+*_dataset*/
+*.png
+*.jpg
+*.jpeg
+
+# ── Model weights (large; live on the Hugging Face Space) ──
+*.h5
+*.keras
+*.ckpt
+
+# ── Secrets: never commit these ────────────────────────────
+.env
+*.env
+secrets.*
+*.key
+
+# ── Python / Jupyter junk ──────────────────────────────────
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.venv/
+venv/
+env/
+
+# ── Windows / editor junk ──────────────────────────────────
+desktop.ini
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+ngrok*.exe
